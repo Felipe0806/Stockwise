@@ -1,0 +1,37 @@
+name: Deploy API to Docker Hub and AWS EC2
+
+on:
+  push:
+    branches:
+      - main  # Ejecuta el workflow cuando haya cambios en la rama principal
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Iniciar sesión en Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Construir la imagen de Docker
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/stockwise-api:latest .
+
+      - name: Subir la imagen a Docker Hub
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/stockwise-api:latest
+
+      - name: Conectarse a AWS EC2 y actualizar contenedor
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_USER }}
+          key: ${{ secrets.AWS_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/app  # Asegúrate de estar en la carpeta del proyecto
+            git pull origin main  # Si el código también se almacena en GitHub
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker-compose down  # Detiene los contenedores actuales
+            docker-compose pull  # Descarga la última imagen de Docker Hub
+            docker-compose up -d  # Levanta los contenedores con la nueva imagen

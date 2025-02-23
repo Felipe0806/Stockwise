@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  api:
+    image: felipe0806/stockwise-api:latest  # Usa la imagen desde Docker Hub
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    restart: always
+
