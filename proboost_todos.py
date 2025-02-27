@@ -12,8 +12,8 @@ import matplotlib
 matplotlib.use("Agg")
 
 # 1. Cargar datos
-archivo_csv = "dataset_completo.csv"
-df = pd.read_csv(archivo_csv, parse_dates=["fecha"], dtype={"producto": str})
+archivo_csv = "dataset_actualizado.csv"
+df = pd.read_csv(archivo_csv, sep=";", dayfirst=True, parse_dates=["fecha"], dtype={"producto": str})
 
 # 2. Ajustar nombres de columnas
 df.rename(columns={"fecha": "ds", "cantidad": "y"}, inplace=True)
@@ -110,7 +110,7 @@ for producto_especifico in productos_unicos:
 
     print(f"Producto {producto_especifico} - ⚡ MAE: {mae}, 📉 RMSE: {rmse}, 📊 R²: {r2}")
 
-    if r2 > 0.70:
+    if r2 > 0.75:
 
         os.makedirs("modelos_productos", exist_ok=True)
         ruta_modelo_prophet = f"modelos_productos/modelo_prophet_{producto_especifico}.pkl"
