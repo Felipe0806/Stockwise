@@ -7,6 +7,13 @@ from prophet import Prophet
 from xgboost import XGBRegressor
 import numpy as np
 
+#INTEGRANTES
+#Daniela Aguilar
+#Sarahí Apolo
+#Keyth Yaguana
+#Felipe Almeida
+#Christian Cueva
+
 # 📌 Crear la API
 app = FastAPI()
 

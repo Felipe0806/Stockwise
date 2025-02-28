@@ -3,7 +3,7 @@ name: Deploy API to Docker Hub and AWS EC2
 on:
   push:
     branches:
-      - main  # Ejecuta el workflow cuando haya cambios en la rama principal
+      - main
 
 jobs:
   deploy:
@@ -29,9 +29,9 @@ jobs:
           username: ${{ secrets.AWS_USER }}
           key: ${{ secrets.AWS_SSH_KEY }}
           script: |
-            cd /home/ubuntu/app  # Asegúrate de estar en la carpeta del proyecto
-            git pull origin main  # Si el código también se almacena en GitHub
+            cd /home/ec2-user/app
+            git pull origin main
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            docker-compose down  # Detiene los contenedores actuales
-            docker-compose pull  # Descarga la última imagen de Docker Hub
-            docker-compose up -d  # Levanta los contenedores con la nueva imagen
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d
