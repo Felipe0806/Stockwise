@@ -1,7 +1,7 @@
 import os
 import joblib
 import pandas as pd
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from datetime import datetime, timedelta
 from prophet import Prophet
 from xgboost import XGBRegressor
@@ -47,7 +47,7 @@ print("✅ Todos los modelos han sido cargados correctamente.")
 
 # 📌 Endpoint para predecir ventas
 @app.get("/predecir/{codigo_producto}")
-async def predecir_ventas(codigo_producto: str):
+async def predecir_ventas(codigo_producto: str, periodo: str = Query("semanal", enum=["semanal", "mensual"])):
     if codigo_producto not in modelos_xgb or codigo_producto not in modelos_prophet:
         raise HTTPException(status_code=404, detail="Modelo no encontrado para el producto.")
 
@@ -61,7 +61,7 @@ async def predecir_ventas(codigo_producto: str):
 
     # 📌 Crear dataframe futuro con la columna 'evento_especial'
     futuro = pd.DataFrame({"ds": fechas_futuras})
-    futuro["evento_especial"] = 0  # Asumimos que no hay eventos especiales en fechas futuras
+    futuro["evento_especial"] = 0  # Se asume que no hay eventos especiales en fechas futuras
 
     # 📌 Predecir con Prophet
     predicciones_prophet = modelo_prophet.predict(futuro)
@@ -83,10 +83,13 @@ async def predecir_ventas(codigo_producto: str):
     # 📌 Asegurar que las predicciones no sean negativas
     futuro["cantidad_predicha"] = futuro["cantidad_predicha"].clip(lower=0)
 
-    # 📌 Agrupar predicciones por semana
-    futuro["semana"] = futuro["ds"].dt.strftime("%Y-%U")  # Año-Semana
-    resultado = futuro.groupby("semana")["cantidad_predicha"].sum().reset_index()
-    resultado.rename(columns={"semana": "periodo"}, inplace=True)
+    # 📌 Agrupar predicciones según el periodo elegido
+    if periodo == "semanal":
+        futuro["periodo"] = futuro["ds"].dt.strftime("%Y-%U")  # Año-Semana
+    elif periodo == "mensual":
+        futuro["periodo"] = futuro["ds"].dt.strftime("%Y-%m")  # Año-Mes
+
+    resultado = futuro.groupby("periodo")["cantidad_predicha"].sum().reset_index()
 
     return resultado.to_dict(orient="records")
 
