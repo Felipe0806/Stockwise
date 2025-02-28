@@ -7,6 +7,13 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import matplotlib.pyplot as plt
 import numpy as np
 
+#INTEGRANTES
+#Daniela Aguilar
+#Sarahí Apolo
+#Keyth Yaguana
+#Felipe Almeida
+#Christian Cueva
+
 # Para evitar problemas con backends de matplotlib
 import matplotlib
 matplotlib.use("Agg")
