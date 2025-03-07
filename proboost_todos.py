@@ -81,6 +81,7 @@ for producto_especifico in productos_unicos:
         changepoint_prior_scale=0.001,
         seasonality_prior_scale=50
     )
+    
     modelo_prophet.add_regressor("evento_especial")
     modelo_prophet.fit(df_train)
 

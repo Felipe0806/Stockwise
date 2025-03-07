@@ -54,7 +54,7 @@ async def predecir_ventas(codigo_producto: str, periodo: str = Query("semanal", 
 
     # 📌 Crear dataframe futuro con la columna 'evento_especial'
     futuro = pd.DataFrame({"ds": fechas_futuras})
-    futuro["evento_especial"] = 0  # Se asume que no hay eventos especiales en fechas futuras
+    futuro["evento_especial"] = 0
 
     # 📌 Predecir con Prophet
     predicciones_prophet = modelo_prophet.predict(futuro)

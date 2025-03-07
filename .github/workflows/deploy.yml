@@ -32,6 +32,15 @@ jobs:
             cd /home/ec2-user/app
             git pull origin main
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+            # Apagar y eliminar contenedores
             docker-compose down
+
+            # Eliminar la imagen existente
+            docker rmi ${{ secrets.DOCKER_USERNAME }}/stockwise-api:latest || true
+
+            # Descargar la nueva imagen
             docker-compose pull
+
+            # Levantar los contenedores nuevamente
             docker-compose up -d
